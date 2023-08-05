@@ -25,6 +25,11 @@ window.addEventListener("load", function () {
   ctx.shadowOffSetY = 10;
   ctx.shadowOffSetX = 5;
   ctx.shadowBlur = 10;
+
+  const canvas2 = document.getElementById("canvas2");
+  const ctx2 = canvas2.getContext("2d");
+  canvas2.width = window.innerWidth;
+  canvas2.height = window.innerHeight;
   
 
   // Render a complex mathematical shape for us: The, we will take that shape and use
@@ -136,11 +141,12 @@ window.addEventListener("load", function () {
       })
     }
   }
-  const rainEffect = new Rain(canvas.width, canvas.height)
+  const rainEffect = new Rain(canvas2.width, canvas2.height)
   console.log(rainEffect)
 
   function animate() {
-    rainEffect.run();
+    ctx2.clearRect(0, 0, canvas2.width, canvas2.height)
+    rainEffect.run(ctx2);
     requestAnimationFrame(animate);
   }
   animate()
