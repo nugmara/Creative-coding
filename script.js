@@ -14,6 +14,13 @@ window.addEventListener("load", function(){
     const ctx = canvas.getContext("2d");
     canvas.width = 600;
     canvas.height = 600;
+    // canvas settings
+    console.log(ctx)
+    ctx.lineWidth = 50;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "yellow";
+    ctx.fillStyle = "pink";
+
 
     // Render a complex mathematical shape for us: The, we will take that shape and use
     // JS to convert it into pixels.
@@ -22,11 +29,16 @@ window.addEventListener("load", function(){
         constructor(canvasWidth, canvasHeight) {
             this.canvasWidth = canvasWidth;
             this.canvasHeight = canvasHeight;
+            this.size = this.canvasWidth * 0.4;
         }
         draw(context) {
+            context.translate(this.canvasWidth / 2, this.canvasHeight / 2);
+            context.scale(0.3, 0.3)
+            context.rotate(Math.PI * 2)
+            context.fillRect(0, 0, this.canvasWidth, this.canvasHeight)
             context.beginPath();
             context.moveTo(0, 0);
-            context.lineTo(canvas.width, canvas.height);
+            context.lineTo(this.size, 0);
             context.stroke();
         }
     }
