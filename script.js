@@ -9,6 +9,8 @@
 // constructor will create one new blank JS object and it will assign it values and properties
 // based on the blueprint inside
 
+// RECURSION: is a process in which a function call itself
+
 window.addEventListener("load", function () {
   const canvas = document.getElementById("canvas1");
   const ctx = canvas.getContext("2d");
@@ -28,8 +30,9 @@ window.addEventListener("load", function () {
     constructor(canvasWidth, canvasHeight) {
       this.canvasWidth = canvasWidth;
       this.canvasHeight = canvasHeight;
-      this.size = this.canvasWidth * 0.4;
-      this.sides = 10;
+      this.size = this.canvasWidth * 0.3;
+      this.sides = 1;
+      this.maxLevel = 1;
     }
     draw(context) {
       // save() method will create a snapchot of the current canvas state
@@ -37,7 +40,7 @@ window.addEventListener("load", function () {
       context.translate(this.canvasWidth / 2, this.canvasHeight / 2);
       context.scale(1, 1);
       for (let i = 0; i < this.sides; i++) {
-        this.#drawLine(context);
+        this.#drawLine(context, 0);
         context.rotate((Math.PI * 2)/ this.sides);
       }
       // restore() method will look for its associated save call and it will
@@ -49,11 +52,18 @@ window.addEventListener("load", function () {
     // Hiding internal functionality from the outside is a good example of the second principle
     // of OOP called Abstraction. Abstraction means we are giding unnecessary details of the inner
     // workings of our objects from the outside and only exposing the essentials.
-    #drawLine(context) {
+    #drawLine(context, level) {
+        if (level > this.maxLevel) return;
       context.beginPath();
       context.moveTo(0, 0);
       context.lineTo(this.size, 0);
       context.stroke();
+      context.save();
+      context.translate(this.size, 0)
+      context.scale(0.7, 0.7)
+      context.rotate(0.9);
+      this.#drawLine(context, level + 1)
+      context.restore();
     }
   }
 
