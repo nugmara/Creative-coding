@@ -94,44 +94,47 @@ window.addEventListener("load", function () {
     }
   }
 
-  const fractal1 = new Fractal(canvas.width, canvas.height);
-  fractal1.draw(ctx);
-
   // We will use Particle class to assign these pixels as a particle shape. Here, we will
   // also deal with motion. We can do floating, raining or spinning particles if we want to.
   // This class will contain a blueprint to define properties and behaviors of individual particles.
   //
   class Particle {
-    constructor(canvasWidth, canvasHeight) {
+    constructor(canvasWidth, canvasHeight, image) {
       this.canvasWidth = canvasWidth;
       this.canvasHeight = canvasHeight;
+      this.image = image;
       this.x = Math.random() * this.canvasWidth;
       this.y = Math.random() * this.canvasHeight;
-      this.width = 50;
-      this.height = 50;
+      this.siezeModifier = Math.random() * 0.5 + 0.1
+      this.width = this.image.width * this.siezeModifier;
+      this.height = this.image.height * this.siezeModifier;
+      this.speed = Math.random() * 1 + 0.2;
     }
     update() {
-      this.x++;
-      this.y++;
+      this.x += this.speed;
+      if (this.x > this.canvasWidth + this.width) this.x = -this.width
+      this.y += this.speed;
+      if (this.y > this.canvasHeight + this.height) this.y = -this.height
     }
     draw(context) {
-      context.fillRect(this.x, this.y, this.width, this.height)
+      context.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
   }
 
   // This class will handle the entire effect. It will define things like number of particles
   // and so on.
   class Rain {
-    constructor(canvasWidth, canvasHeight) {
+    constructor(canvasWidth, canvasHeight, image) {
       this.canvasWidth = canvasWidth;
       this.canvasHeight = canvasHeight;
+      this.image = image;
       this.numberOfParticles = 20;
       this.particles = [];
       this.#initiaize()
     }
     #initiaize() {
       for ( let i = 0; i < this.numberOfParticles; i++) {
-        this.particles.push(new Particle(this.canvasWidth, this.canvasHeight));
+        this.particles.push(new Particle(this.canvasWidth, this.canvasHeight, this.image));
       }
     }
     run(context) {
@@ -141,13 +144,19 @@ window.addEventListener("load", function () {
       })
     }
   }
-  const rainEffect = new Rain(canvas2.width, canvas2.height)
-  console.log(rainEffect)
+  const fractal1 = new Fractal(canvas.width, canvas.height);
+  fractal1.draw(ctx);
+  const fractalImage = new Image();
+  fractalImage.src = canvas.toDataURL();
 
-  function animate() {
-    ctx2.clearRect(0, 0, canvas2.width, canvas2.height)
-    rainEffect.run(ctx2);
-    requestAnimationFrame(animate);
+  fractalImage.onload = function() {
+    const rainEffect = new Rain(canvas2.width, canvas2.height, fractalImage)
+    function animate() {
+      ctx2.clearRect(0, 0, canvas2.width, canvas2.height)
+      rainEffect.run(ctx2);
+      requestAnimationFrame(animate);
+    }
+    animate()
   }
-  animate()
+
 });
