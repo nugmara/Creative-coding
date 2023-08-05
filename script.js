@@ -18,7 +18,7 @@ window.addEventListener("load", function () {
   canvas.height = 600;
   // canvas settings
   console.log(ctx);
-  ctx.lineWidth = 50;
+  ctx.lineWidth = 30;
   ctx.lineCap = "round";
   ctx.strokeStyle = "pink";
   ctx.fillStyle = "pink";
@@ -30,9 +30,12 @@ window.addEventListener("load", function () {
     constructor(canvasWidth, canvasHeight) {
       this.canvasWidth = canvasWidth;
       this.canvasHeight = canvasHeight;
-      this.size = this.canvasWidth * 0.3;
-      this.sides = 1;
-      this.maxLevel = 1;
+      this.size = this.canvasWidth * 0.2;
+      this.sides = 6;
+      this.maxLevel = 3;
+      this.scale = 0.5;
+      this.spread = 1;
+      this.branches = 2;
     }
     draw(context) {
       // save() method will create a snapchot of the current canvas state
@@ -41,7 +44,7 @@ window.addEventListener("load", function () {
       context.scale(1, 1);
       for (let i = 0; i < this.sides; i++) {
         this.#drawLine(context, 0);
-        context.rotate((Math.PI * 2)/ this.sides);
+        context.rotate((Math.PI * 2) / this.sides);
       }
       // restore() method will look for its associated save call and it will
       // reset canvas state back to what back to what it was at the point save was called
@@ -53,17 +56,30 @@ window.addEventListener("load", function () {
     // of OOP called Abstraction. Abstraction means we are giding unnecessary details of the inner
     // workings of our objects from the outside and only exposing the essentials.
     #drawLine(context, level) {
-        if (level > this.maxLevel) return;
+      if (level > this.maxLevel) return;
       context.beginPath();
       context.moveTo(0, 0);
       context.lineTo(this.size, 0);
       context.stroke();
-      context.save();
-      context.translate(this.size, 0)
-      context.scale(0.7, 0.7)
-      context.rotate(0.9);
-      this.#drawLine(context, level + 1)
-      context.restore();
+
+      for (let i = 0; i < this.branches; i++) {
+        context.save();
+
+        context.translate(this.size - (this.size / this.branches) * i, 0);
+        context.scale(this.scale, this.scale);
+
+        context.save();
+        context.rotate(this.spread);
+        this.#drawLine(context, level + 1);
+        context.restore();
+
+        context.save();
+        context.rotate(-this.spread);
+        this.#drawLine(context, level + 1);
+        context.restore();
+        context.restore();
+
+      }
     }
   }
 
